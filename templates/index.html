@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Sentiment Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        .review {
+            margin-bottom: 20px;
+        }
+        
+        .review p {
+            margin: 5px 0;
+        }
+        
+        .positive {
+            color: green;
+        }
+        
+        .neutral {
+            color: gray;
+        }
+        
+        .negative {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Review Sentiment Analysis</h1>
+    <div id="reviews-container"></div>
+
+    <script>
+        async function fetchReviews() {
+            const response = await fetch('/reviews');
+            const data = await response.json();
+            displayReviews(data);
+        }
+
+        function displayReviews(reviews) {
+            const container = document.getElementById('reviews-container');
+            reviews.forEach(review => {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review';
+
+                const reviewText = document.createElement('p');
+                reviewText.textContent = `Review: ${review.text}`;
+                reviewDiv.appendChild(reviewText);
+
+                const sentiment = document.createElement('p');
+                sentiment.className = getSentimentClass(review.sentiment.compound);
+                sentiment.textContent = `Sentiment: ${getSentimentLabel(review.sentiment.compound)}`;
+                reviewDiv.appendChild(sentiment);
+
+                const summary = document.createElement('p');
+                summary.textContent = `Summary: ${review.summary}`;
+                reviewDiv.appendChild(summary);
+
+                container.appendChild(reviewDiv);
+            });
+        }
+
+        function getSentimentClass(compound) {
+            if (compound > 0.05) {
+                return 'positive';
+            } else if (compound < -0.05) {
+                return 'negative';
+            } else {
+                return 'neutral';
+            }
+        }
+
+        function getSentimentLabel(compound) {
+            if (compound > 0.05) {
+                return 'Positive';
+            } else if (compound < -0.05) {
+                return 'Negative';
+            } else {
+                return 'Neutral';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchReviews);
+    </script>
+</body>
+
+</html>
